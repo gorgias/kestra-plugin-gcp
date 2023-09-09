@@ -20,7 +20,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.junit.jupiter.api.Test;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -75,10 +74,10 @@ class TriggerTest {
 
             // wait for execution
             executionQueue.receive(TriggerTest.class, execution -> {
-                last.set(execution);
+                last.set(execution.getLeft());
 
                 queueCount.countDown();
-                assertThat(execution.getFlowId(), is("pubsub-listen"));
+                assertThat(execution.getLeft().getFlowId(), is("pubsub-listen"));
             });
 
 
@@ -95,7 +94,7 @@ class TriggerTest {
                 .projectId(this.project)
                 .from(
                     List.of(
-                        Message.builder().data(Base64.getEncoder().encodeToString("Hello World".getBytes())).build(),
+                        Message.builder().data("Hello World".getBytes()).build(),
                         Message.builder().attributes(Map.of("key", "value")).build()
                     )
                 )
